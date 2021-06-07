@@ -4,10 +4,10 @@
 #include <ostream>
 #include <fstream>
 #include <sstream>
-#include "GreaterLayer.hpp"
-#include "Sampling.hpp"
-#include "Grouping.hpp"
-#include "Calculate.hpp"
+#include "src/opencvCustomOps/GreaterLayer.hpp"
+#include "src/opencvCustomOps/Sampling.hpp"
+#include "src/opencvCustomOps/Grouping.hpp"
+#include "src/opencvCustomOps/Calculate.hpp"
 #include <opencv.hpp>
 
 using namespace std;
@@ -60,6 +60,14 @@ CarDetector::CarDetector(const std::string& data_path, const std::string& model_
 
 CarDetector::~CarDetector() {}
 
+template <class Type>
+Type stringToNum(const string& str) {
+    istringstream iss(str);
+    Type num;
+    iss >> num;
+    return num;
+}
+
 void pre(string idx, string data_path) {
     int MAX_POINT_NUMBER = 16384;
     string POINT = data_path + "/point/";
@@ -72,7 +80,7 @@ void pre(string idx, string data_path) {
     Mat img = imread(IMAGE + idx + ".png");
     if (!img.data)
     {
-        cout << "Í¼Ïñ¼ÓÔØÊ§°Ü!" << endl;
+        cout << "å›¾åƒåŠ è½½å¤±è´¥!" << endl;
         exit(0);
     }
     cvtColor(img, img, COLOR_BGR2RGB);
@@ -203,13 +211,6 @@ void CarDetector::preprocessor()
 	}
 }
 
-template <class Type>
-Type stringToNum(const string& str) {
-	istringstream iss(str);
-	Type num;
-	iss >> num;
-	return num;
-}
 cv::Mat getInput(string idx, string data_path)
 {
 	string inputDir = data_path + "/pre_data/" + idx + ".txt";
