@@ -4,10 +4,10 @@
 #include <ostream>
 #include <fstream>
 #include <sstream>
-#include "src/opencvCustomOps/GreaterLayer.hpp"
-#include "src/opencvCustomOps/Sampling.hpp"
-#include "src/opencvCustomOps/Grouping.hpp"
-#include "src/opencvCustomOps/Calculate.hpp"
+#include "GreaterLayer.hpp"
+#include "Sampling.hpp"
+#include "Grouping.hpp"
+#include "Calculate.hpp"
 #include <opencv.hpp>
 
 using namespace std;
@@ -62,10 +62,10 @@ CarDetector::~CarDetector() {}
 
 template <class Type>
 Type stringToNum(const string& str) {
-    istringstream iss(str);
-    Type num;
-    iss >> num;
-    return num;
+	istringstream iss(str);
+	Type num;
+	iss >> num;
+	return num;
 }
 
 void pre(string idx, string data_path) {
