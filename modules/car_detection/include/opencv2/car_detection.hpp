@@ -13,9 +13,9 @@ namespace cv {
 
 			~CarDetector();
 
-			void preprocessor();
+			void preprocessor(std::string idx);
 
-			void infer();
+			void infer(std::string idx);
 
 		private:
 			std::string model_path;

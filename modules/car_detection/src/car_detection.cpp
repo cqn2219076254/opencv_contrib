@@ -62,13 +62,14 @@ CarDetector::~CarDetector() {}
 
 template <class Type>
 Type stringToNum(const string& str) {
-	istringstream iss(str);
-	Type num;
-	iss >> num;
-	return num;
+    istringstream iss(str);
+    Type num;
+    iss >> num;
+    return num;
 }
 
-void pre(string idx, string data_path) {
+void CarDetector::preprocessor(string idx) {
+    std::cout << "Preprocessing: " << idx << std::endl;
     int MAX_POINT_NUMBER = 16384;
     string POINT = data_path + "/point/";
     string CALIB = data_path + "/calib/";
@@ -80,7 +81,7 @@ void pre(string idx, string data_path) {
     Mat img = imread(IMAGE + idx + ".png");
     if (!img.data)
     {
-        cout << "图像加载失败!" << endl;
+        cout << "Image loading failure!" << endl;
         exit(0);
     }
     cvtColor(img, img, COLOR_BGR2RGB);
@@ -198,19 +199,6 @@ void pre(string idx, string data_path) {
     }
 }
 
-void CarDetector::preprocessor()
-{
-	ifstream list(data_path + "/list.txt");
-	vector<string> Idx;
-	string idx;
-	while (getline(list, idx)) {
-		Idx.push_back(idx);
-	}
-	for (string i : Idx) {
-		pre(i, data_path);
-	}
-}
-
 cv::Mat getInput(string idx, string data_path)
 {
 	string inputDir = data_path + "/pre_data/" + idx + ".txt";
@@ -226,30 +214,22 @@ cv::Mat getInput(string idx, string data_path)
 	return C;
 }
 
-void CarDetector::infer()
+void CarDetector::infer(string idx)
 {
-	ifstream in(data_path + "/list.txt");
-	vector<string> Idx;
-	string idx;
-	while (getline(in, idx)) {
-		Idx.push_back(idx);
-	}
-	for (auto i : Idx) {
-		std::cout << "Running: " << i << std::endl;
-		Mat blob = getInput(i, data_path);
-		Net net = readNetFromTensorflow(model_path);
-		net.setInput(blob);
-		std::vector<String> outNames(2);
-		outNames[0] = "import/Gather";
-		outNames[1] = "import/Gather_1";
-		std::vector<Mat> outs(2);
-		net.forward(outs, outNames);
-		std::ofstream result_3d(data_path + "/aft_data/"+i+".txt", std::ios::out);
-		for (int k = 0; k < 100; k++) {
-			for (int j = 0; j < 7; j++) {
-				result_3d << outs[0].ptr<float>(k)[j] << " ";
-			}
-			result_3d << outs[1].ptr<float>(0)[k] << " " << std::endl;
-		}
-	}
+    std::cout << "Running: " << idx << std::endl;
+    Mat blob = getInput(idx, data_path);
+    Net net = readNetFromTensorflow(model_path);
+    net.setInput(blob);
+    std::vector<String> outNames(2);
+    outNames[0] = "import/Gather";
+    outNames[1] = "import/Gather_1";
+    std::vector<Mat> outs(2);
+    net.forward(outs, outNames);
+    std::ofstream result_3d(data_path + "/aft_data/" + idx + ".txt", std::ios::out);
+    for (int k = 0; k < 100; k++) {
+        for (int j = 0; j < 7; j++) {
+            result_3d << outs[0].ptr<float>(k)[j] << " ";
+        }
+        result_3d << outs[1].ptr<float>(0)[k] << " " << std::endl;
+    }
 }
